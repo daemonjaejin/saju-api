@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- mapper DTD 선언 -->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.saju.api.menu.mapper.MenuMapper">
+    <sql id="menuSelect">
+        SELECT
+            TM.MENU_ID             AS MENU_ID
+             , TM.MENU_NAME         AS MENU_NAME
+             , TM.MENU_PARENT_ID    AS MENU_PARENT_ID
+             , TM.USE_YN            AS USE_YN
+             , TM.CREATE_USER_ID    AS CREATE_USER_ID
+             , TM.UPDATE_USER_ID    AS UPDATE_USER_ID
+             , TM.CREATE_DATE       AS CREATE_DATE
+             , TM.UPDATE_DATE       AS UPDATE_DATE
+    </sql>
+    <sql id="menuCondition">
+        <where>
+            <if test="vo.menuParentId != null and vo.menuParentId != ''">
+                AND TM.MENU_PARENT_ID = #{vo.menuParentId}
+            </if>
+            <if test="vo.menuName != null and vo.menuName != ''">
+                AND TM.MENU_NAME = #{vo.menuName}
+            </if>
+            <if test="vo.menuUrl != null and vo.menuUrl != ''">
+                AND TM.MENU_URL = #{vo.menuUrl}
+            </if>
+            <if test="vo.useYn != null">
+                AND TM.USE_YN = #{vo.useYn}
+            </if>
+        </where>
+    </sql>
+    <select id="menuList"
+        parameterType="com.saju.api.menu.entity.MenuEntity"
+        resultType="com.saju.api.menu.dto.MenuResult">
+        <include refid="menuSelect" />
+         FROM TB_MENU TM
+        <include refid="menuCondition" />
+        ORDER BY TM.CREATE_DATE DESC
+    </select>
+    <select id="menuTotalCnt"
+        parameterType="com.saju.api.menu.entity.MenuEntity">
+         SELECT
+             COUNT(MENU_ID)
+         FROM TB_MENU TM
+        <include refid="menuCondition" />
+    </select>
+    <select id="menuDetail"
+            parameterType="com.saju.api.menu.entity.MenuEntity"
+            resultType="com.saju.api.menu.dto.MenuResult">
+        SELECT
+            TM.MENU_ID              AS MENU_ID
+             , TM.MENU_NAME         AS MENU_NAME
+             , TM.MENU_PARENT_ID    AS MENU_PARENT_ID
+             , TM.MENU_URL          AS MENU_URL
+             , TM.USE_YN            AS USE_YN
+             , TM.CREATE_USER_ID    AS CREATE_USER_ID
+             , TM.UPDATE_USER_ID    AS UPDATE_USER_ID
+             , TM.CREATE_DATE       AS CREATE_DATE
+             , TM.UPDATE_DATE       AS UPDATE_DATE
+        FROM TB_MENU TM
+        <where>
+            AND TM.MENU_ID = #{vo.menuId}
+        </where>
+    </select>
+    <update id="menuUpdate"
+        parameterType="com.saju.api.menu.entity.MenuPutEntity">
+        UPDATE TB_MENU
+        <set>
+            <if test="vo.menuParentId != null and vo.menuParentId != ''">
+                MENU_PARENT_ID = #{vo.menuParentId},
+            </if>
+            <if test="vo.menuName != null and vo.menuName != ''">
+                MENU_NAME = #{vo.menuName},
+            </if>
+            <if test="vo.menuUrl != null and vo.menuUrl != ''">
+                MENU_URL = #{vo.menuUrl},
+            </if>
+            <if test="vo.useYn != null and vo.useYn != ''">
+                USE_YN = #{vo.useYn},
+            </if>
+            UPDATE_USER_ID = #{vo.updateUserId},
+            UPDATE_DATE = NOW()
+        </set>
+        WHERE MENU_ID = #{vo.menuId}
+    </update>
+    <insert id="menuInsert"
+        parameterType="com.saju.api.menu.entity.MenuPutEntity">
+        <selectKey keyProperty="vo.menuId" resultType="string" order="BEFORE">
+            SELECT
+                CONCAT('MENU', LPAD(IFNULL(MAX(CAST(SUBSTRING(MENU_ID, 5) AS UNSIGNED)), 0) +1, 8, '0'))
+            FROM TB_MENU
+        </selectKey>
+        INSERT INTO TB_MENU
+        (
+            MENU_ID
+            , MENU_PARENT_ID
+            , MENU_NAME
+            , MENU_URL
+            , USE_YN
+            , CREATE_USER_ID
+            , UPDATE_USER_ID
+            , CREATE_DATE
+            , UPDATE_DATE
+        )VALUES(
+            #{vo.menuId}
+            , #{vo.menuParentId}
+            , #{vo.menuName}
+            , #{vo.menuUrl}
+            , #{vo.useYn}
+            , #{vo.createUserId}
+            , #{vo.updateUserId}
+            , NOW()
+            , NOW()
+        )
+    </insert>
+    <delete id="menuDelete"
+        parameterType="com.saju.api.menu.entity.MenuDelEntity">
+        DELETE FROM TB_MENU
+        WHERE MENU_ID = #{vo.menuId}
+    </delete>
+</mapper>

@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- mapper DTD 선언 -->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.saju.api.admin.mapper.CodeMapper">
+    <sql id="codeSelect">
+        SELECT
+            TCC.GROUP_CODE              AS GROUP_CODE
+            , TCG.GROUP_CODE_NAME       AS GROUP_CODE_NAME
+            , TCC.COMMON_CODE           AS COMMON_CODE
+            , TCC.COMMON_CODE_NAME      AS COMMON_CODE_NAME
+            , TCC.COMMON_CODE_ORDER     AS COMMON_CODE_ORDER
+            , TCC.EMPTY_VAL_1           AS EMPTY_VAL_1
+            , TCC.EMPTY_VAL_2           AS EMPTY_VAL_2
+            , TCC.EMPTY_VAL_3           AS EMPTY_VAL_3
+            , TCC.EMPTY_VAL_4           AS EMPTY_VAL_4
+            , TCC.EMPTY_VAL_5           AS EMPTY_VAL_5
+            , TCC.CREATE_USER_ID        AS CREATE_USER_ID
+            , TCC.UPDATE_USER_ID        AS UPDATE_USER_ID
+            , TCC.CREATE_DATE           AS CREATE_DATE
+            , TCC.UPDATE_DATE           AS UPDATE_DATE
+            , TCC.USE_YN                AS USE_YN
+            , TCC.COMMON_CODE_ID        AS COMMON_CODE_ID
+    </sql>
+    <sql id="codeCondition">
+        <where>
+            <if test="vo.groupCode != null and vo.groupCode != ''">
+                AND TCC.GROUP_CODE = #{vo.groupCode}
+            </if>
+            <if test="vo.groupCodeName != null and vo.groupCodeName != ''">
+                AND UPPER(TCG.GROUP_CODE_NAME) LIKE CONCAT('%', UPPER(#{vo.groupCodeName}), '%')
+            </if>
+            <if test="vo.commonCodeName != null and vo.commonCodeName != ''">
+                AND UPPER(TCC.COMMON_CODE_NAME) LIKE CONCAT('%', UPPER(#{vo.commonCodeName}), '%')
+            </if>
+            <if test="vo.useYn != null">
+                AND TCC.USE_YN = #{vo.useYn}
+            </if>
+            <if test="vo.dateRange != null and vo.dateRange.size() == 2">
+                AND TCC.UPDATE_DATE BETWEEN CONCAT(#{vo.startDate}, ' 00:00:00') AND CONCAT(#{vo.endDate}, ' 23:59:59')
+            </if>
+        </where>
+    </sql>
+    <sql id="codeFrom">
+        FROM TB_COMMON_CODE TCC
+        INNER JOIN TB_COMMON_GROUP TCG
+        ON TCC.GROUP_CODE = TCG.GROUP_CODE
+    </sql>
+    <select id="codeList"
+            parameterType="com.saju.api.admin.entity.CodeEntity"
+            resultType="com.saju.api.admin.dto.CodeResult">
+        <include refid="codeSelect" />
+        <include refid="codeFrom" />
+        <include refid="codeCondition" />
+        <choose>
+            <when test="vo.orderByClause != null and vo.orderByClause != ''">
+                ORDER BY ${vo.orderByClause}
+            </when>
+            <otherwise>
+                ORDER BY TCC.CREATE_DATE DESC
+            </otherwise>
+        </choose>
+        <include refid="Core.pagingAfter"/>
+    </select>
+    <select id="codeTotalCnt"
+            parameterType="com.saju.api.admin.entity.CodeEntity"
+            resultType="java.lang.Long">
+        SELECT COUNT(COMMON_CODE_ID)
+        <include refid="codeFrom" />
+        <include refid="codeCondition" />
+    </select>
+    <update id="codeUpdate" parameterType="com.saju.api.admin.entity.CodePutEntity">
+        UPDATE TB_COMMON_CODE
+        <set>
+            <if test="vo.commonCode != null and vo.commonCode !=''">
+                COMMON_CODE = #{vo.commonCode},
+            </if>
+            <if test="vo.commonCodeName != null and vo.commonCodeName !=''">
+                COMMON_CODE_NAME = #{vo.commonCodeName},
+            </if>
+            <if test="vo.commonCodeOrder != null and vo.commonCodeOrder !=''">
+                COMMON_CODE_ORDER = #{vo.commonCodeOrder},
+            </if>
+            <if test="vo.useYn != null">
+                USE_YN = #{vo.useYn},
+            </if>
+            UPDATE_USER_ID = #{vo.updateUserId},
+            UPDATE_DATE = NOW()
+        </set>
+        WHERE COMMON_CODE_ID = #{vo.commonCodeId}
+    </update>
+    <insert id="codeInsert" parameterType="com.saju.api.admin.entity.CodePutEntity">
+        <selectKey keyProperty="vo.commonCodeId" resultType="string" order="BEFORE">
+            SELECT
+                CONCAT('CODE', LPAD(IFNULL(MAX(CAST(SUBSTRING(COMMON_CODE_ID, 5) AS UNSIGNED)), 0) +1, 8, '0'))
+            FROM TB_COMMON_CODE
+        </selectKey>
+        INSERT INTO TB_COMMON_CODE
+        (
+            COMMON_CODE_ID
+            , COMMON_CODE
+            , GROUP_CODE
+            , COMMON_CODE_NAME
+            , COMMON_CODE_ORDER
+            , USE_YN
+            , CREATE_USER_ID
+            , UPDATE_USER_ID
+            , CREATE_DATE
+            , UPDATE_DATE
+        )
+        VALUES
+        (
+            #{vo.commonCodeId}
+            , #{vo.commonCode}
+            , #{vo.groupCode}
+            , #{vo.commonCodeName}
+            , #{vo.commonCodeOrder}
+            , #{vo.useYn}
+            , #{vo.createUserId}
+            , #{vo.updateUserId}
+            , NOW()
+            , NOW()
+        )
+    </insert>
+    <delete id="codeDelete"
+            parameterType="com.saju.api.admin.entity.CodeDelEntity">
+        DELETE FROM TB_COMMON_CODE TCC
+        WHERE TCC.COMMON_CODE_ID IN
+        <foreach collection="vo.commonCodeIdList" open="(" close=")" item="commonCodeId" separator=",">
+            #{commonCodeId}
+        </foreach>
+    </delete>
+</mapper>

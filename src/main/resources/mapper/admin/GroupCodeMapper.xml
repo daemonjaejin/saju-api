@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- mapper DTD 선언 -->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.saju.api.admin.mapper.GroupCodeMapper">
+    <sql id="groupCodeSelect">
+        SELECT
+            TCG.GROUP_CODE_ID       AS GROUP_CODE_ID
+             , TCG.GROUP_CODE       AS GROUP_CODE
+             , TCG.GROUP_CODE_NAME  AS GROUP_CODE_NAME
+             , TCG.DESCRIPTION      AS DESCRIPTION
+             , TCG.USE_YN           AS USE_YN
+             , TCG.CREATE_DATE      AS CREATE_DATE
+             , TCG.UPDATE_DATE      AS UPDATE_DATE
+             , TCG.CREATE_USER_ID   AS CREATE_USER_ID
+             , TCG.UPDATE_USER_ID   AS UPDATE_USER_ID
+    </sql>
+    <sql id="groupCodeFrom">
+        FROM TB_COMMON_GROUP TCG
+        <where>
+            AND USE_YN = 1
+        </where>
+    </sql>
+    <sql id="groupCodeCondition">
+        <where>
+            <if test="vo.groupCode != null and vo.groupCode != ''">
+                AND TCG.GROUP_CODE = #{vo.groupCode}
+            </if>
+            <if test="vo.groupCodeName != null and vo.groupCodeName != ''">
+                AND TCG.GROUP_CODE_NAME LIKE CONCAT('%', #{vo.groupCodeName}, '%')
+            </if>
+        </where>
+    </sql>
+    <select id="groupCodeList"
+            parameterType="com.saju.api.admin.entity.GroupCodeEntity"
+            resultType="com.saju.api.admin.dto.GroupCodeResult">
+        <include refid="groupCodeSelect" />
+        <include refid="groupCodeFrom" />
+        <include refid="groupCodeCondition" />
+        <choose>
+            <when test="vo.orderByClause != null and vo.orderByClause != ''">
+                ORDER BY TCG.${vo.orderByClause}
+            </when>
+            <otherwise>
+                ORDER BY TCG.CREATE_DATE DESC
+            </otherwise>
+        </choose>
+        <include refid="Core.pagingAfter"/>
+    </select>
+    <select id="groupCodeTotalCnt"
+            parameterType="com.saju.api.admin.entity.GroupCodeEntity"
+            resultType="java.lang.Long">
+        SELECT COUNT(GROUP_CODE_ID)
+        <include refid="groupCodeFrom" />
+        <include refid="groupCodeCondition" />
+    </select>
+</mapper>
