@@ -13,4 +13,5 @@ public class CodeEntity extends PageEntity {
     private String groupCodeName;
     private String commonCodeName;
     private Integer useYn;
+    private List<String> groupCodeNameList;
 }

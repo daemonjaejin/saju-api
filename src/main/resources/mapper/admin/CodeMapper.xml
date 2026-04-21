@@ -39,6 +39,12 @@
             <if test="vo.dateRange != null and vo.dateRange.size() == 2">
                 AND TCC.UPDATE_DATE BETWEEN CONCAT(#{vo.startDate}, ' 00:00:00') AND CONCAT(#{vo.endDate}, ' 23:59:59')
             </if>
+            <if test="vo.groupCodeNameList != null and vo.groupCodeNameList.size() > 0">
+                AND TCG.GROUP_CODE_NAME IN
+                <foreach collection="vo.groupCodeNameList" open="(" close=")" item="groupCodeName" separator=",">
+                     #{groupCodeName}
+                </foreach>
+            </if>
         </where>
     </sql>
     <sql id="codeFrom">
