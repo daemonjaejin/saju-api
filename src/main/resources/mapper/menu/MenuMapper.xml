@@ -5,7 +5,7 @@
 <mapper namespace="com.saju.api.menu.mapper.MenuMapper">
     <sql id="menuSelect">
         SELECT
-            TM.MENU_ID             AS MENU_ID
+            TM.MENU_ID              AS MENU_ID
              , TM.MENU_NAME         AS MENU_NAME
              , TM.MENU_PARENT_ID    AS MENU_PARENT_ID
              , TM.USE_YN            AS USE_YN
@@ -13,6 +13,7 @@
              , TM.UPDATE_USER_ID    AS UPDATE_USER_ID
              , TM.CREATE_DATE       AS CREATE_DATE
              , TM.UPDATE_DATE       AS UPDATE_DATE
+             , TM.MENU_URL          AS MENU_URL
     </sql>
     <sql id="menuCondition">
         <where>

@@ -1,5 +1,6 @@
 package com.saju.api.comm.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,7 +11,11 @@ import java.time.LocalDateTime;
 public abstract class PutEntity {
     private String createUserId = "SYSTEM";
     private String updateUserId = "SYSTEM";
+
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss") // 형식을 다시 시분초 포함으로 돌려놓고
     private LocalDateTime createDate;
+
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss") // 형식을 다시 시분초 포함으로 돌려놓고
     private LocalDateTime updateDate;
 
     public void prePersist() {
