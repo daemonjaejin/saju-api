@@ -19,8 +19,15 @@ spring:
       host: localhost
       port: 6379
   session:
-    store-type: redis  # 이 설정이 있어야 세션이 레디스로 갑니다!
-    timeout: 30m
+    store-type: none  # JWT STATELESS 방식 사용 → Redis 세션 불필요
+  batch:
+    jdbc:
+      job:
+        enabled: false
+#      initialize-schema: never  # Spring Batch 메타 테이블 자동 생성 비활성화
+
+  kafka:
+    bootstrap-servers: localhost:9092  # Kafka 미사용 시 auto-config 오류 방지
 mybatis:
   configuration:
     map-underscore-to-camel-case: true
@@ -30,11 +37,11 @@ springdoc:
   default-consumes-media-type: application/json
   default-produces-media-type: application/json
   swagger-ui:
-    path: /swagger-ui.html
+    path: /swagger-ui/index.html
     disable-swagger-default-url: true
     display-request-duration: true
   api-docs:
-    path: /api-docs
+    path: /v3/api-docs
   show-actuator: true
 logging:
   level:
@@ -44,5 +51,10 @@ logging:
     org.springframework.jdbc: DEBUG
     com.saju.api.mapper: DEBUG
     org.mybatis: DEBUG
+#    root: DEBUG
 file:
   upload-dir: C:/Users/c/Pictures/test/upload/
+jwt:
+  secret: bXlTZWNyZXRLZXlGb3JKV1RUb2tlbkdlbmVyYXRpb24=
+  access-expiration: 1800000     # 30분 (밀리초)
+  refresh-expiration: 604800000

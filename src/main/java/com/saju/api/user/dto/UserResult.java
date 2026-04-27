@@ -9,6 +9,7 @@ import lombok.Setter;
 public class UserResult extends CommonDto {
     private String userId;
     private String userName;
+    private String roleId;
     private String genderCodeName;
     private String genderCode;
     private String address;
