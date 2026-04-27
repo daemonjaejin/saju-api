@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- mapper DTD 선언 -->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.saju.api.user.mapper.UserMapper">
+    <sql id="userSelect">
+        SELECT
+            TU.USER_ID			    AS USER_ID
+             , TU.USER_NAME		    AS USER_NAME
+             , TU.ROLE_ID		    AS ROLE_ID
+             , (SELECT COMMON_CODE_NAME FROM TB_COMMON_CODE TCC WHERE TCC.COMMON_CODE = TU.GENDER_CODE AND TCC.GROUP_CODE = 'GENDER') AS GENDER_CODE_NAME
+             , TU.GENDER_CODE 	    AS GENDER_CODE
+             , TU.ADDRESS 		    AS ADDRESS
+             , TU.PHONE 			AS PHONE
+             , TU.STAR_SIGN 		AS STAR_SIGN
+             , TU.STATUS 		    AS STATUS
+             , TU.PASSWORD 			AS PASSWORD
+             , TU.USE_YN 		    AS USE_YN
+             , TU.CREATE_USER_ID    AS CREATE_USER_ID
+             , TU.UPDATE_USER_ID	AS UPDATE_USER_ID
+             , TU.CREATE_DATE	    AS CREATE_DATE
+             , TU.UPDATE_DATE	    AS UPDATE_DATE
+    </sql>
+    <sql id="userCondition">
+        <where>
+            <if test="vo.userId != null and vo.userId != ''">
+                AND TU.USER_ID = #{vo.userId}
+            </if>
+            <if test="vo.userName != null and vo.userName != ''">
+                AND UPPER(TU.USER_NAME) LIKE CONCAT('%', UPPER(#{vo.userName}), '%')
+            </if>
+            <if test="vo.gerderCode != null and vo.gerderCode != ''">
+                AND TU.GENDER_CODE = #{vo.gerderCode}
+            </if>
+            <if test="vo.status != null and vo.status != ''">
+                AND TU.STATUS = #{vo.status}
+            </if>
+            <if test="vo.useYn != null">
+                AND TU.USE_YN = #{vo.useYn}
+            </if>
+        </where>
+    </sql>
+    <select id="userSelect"
+        parameterType="com.saju.api.user.entity.UserEntity"
+        resultType="com.saju.api.user.dto.UserResult">
+        <include refid="userSelect" />
+        FROM TB_USER TU
+        <include refid="userCondition" />
+        ORDER BY TU.CREATE_DATE DESC
+    </select>
+    <select id="userTotalCnt"
+        parameterType="com.saju.api.user.entity.UserEntity">
+         SELECT
+             COUNT(USER_ID)
+         FROM TB_USER TU
+        <include refid="userCondition" />
+    </select>
+    <select id="userDetail"
+            parameterType="com.saju.api.user.entity.UserEntity"
+            resultType="com.saju.api.user.dto.UserResult">
+        <include refid="userSelect" />
+        FROM TB_USER TU
+        <where>
+            AND TU.USER_ID = #{vo.userId}
+        </where>
+    </select>
+    <update id="userUpdate"
+        parameterType="com.saju.api.user.entity.UserPutEntity">
+        UPDATE TB_USER
+        <set>
+            <if test="vo.userName != null and vo.userName != ''">
+                USER_NAME = #{vo.userName},
+            </if>
+            <if test="vo.genderCode != null and vo.genderCode != ''">
+                GENDER_CODE = #{vo.genderCode},
+            </if>
+            <if test="vo.address != null and vo.address != ''">
+                ADDRESS = #{vo.address},
+            </if>
+            <if test="vo.phone != null and vo.phone != ''">
+                PHONE = #{vo.phone},
+            </if>
+            <if test="vo.starSign != null and vo.starSign != ''">
+                STAR_SIGN = #{vo.starSign},
+            </if>
+            <if test="vo.status != null and vo.status != ''">
+                STATUS = #{vo.status},
+            </if>
+            <if test="vo.useYn != null and vo.useYn != ''">
+                USE_YN = #{vo.useYn},
+            </if>
+            UPDATE_USER_ID = #{vo.updateUserId},
+            UPDATE_DATE = NOW()
+        </set>
+        WHERE USER_ID = #{vo.userId}
+    </update>
+    <insert id="userInsert"
+        parameterType="com.saju.api.user.entity.UserPutEntity">
+        <selectKey keyProperty="vo.userId" resultType="string" order="BEFORE">
+            SELECT
+                CONCAT('USER', LPAD(IFNULL(MAX(CAST(SUBSTRING(USER_ID, 5) AS UNSIGNED)), 0) +1, 8, '0'))
+            FROM TB_USER
+        </selectKey>
+        INSERT INTO TB_USER
+        (
+            USER_ID
+            , USER_NAME
+            , GENDER_CODE
+            , ADDRESS
+            , PHONE
+            , STATUS
+            , USE_YN
+            , CREATE_DATE
+            , UPDATE_DATE
+        )VALUES(
+            #{vo.userId}
+            , #{vo.userName}
+            , #{vo.genderCode}
+            , #{vo.address}
+            , #{vo.phone}
+            , #{vo.status}
+            , #{vo.useYn}
+            , #{vo.createUserId}
+            , #{vo.updateUserId}
+            , NOW()
+            , NOW()
+        )
+    </insert>
+</mapper>
