@@ -28,7 +28,7 @@ public class AuthService {
         // ID/PW 검증
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        request.getUsername(), request.getPassword())
+                        request.getUserId(), request.getPassword())
         );
 
         String username = authentication.getName();

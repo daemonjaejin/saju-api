@@ -13,7 +13,7 @@ spring:
       idle-timeout: 30000
       connection-timeout: 20000
       connection-test-query: SELECT 1
-      keepalive-time: 30000
+      keepalive-time: 120000   # ✅ 주석 해제 + 2분으로 늘리기 (기본 30초)
   data:
     redis:
       host: localhost
@@ -55,6 +55,6 @@ logging:
 file:
   upload-dir: C:/Users/c/Pictures/test/upload/
 jwt:
-  secret: bXlTZWNyZXRLZXlGb3JKV1RUb2tlbkdlbmVyYXRpb24=
+  secret: bXlTZWNyZXRLZXlGb3JKV1RUb2tlbkdlbmVyYXRpb24xMjM0NTY3ODkwYWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXo=
   access-expiration: 1800000     # 30분 (밀리초)
   refresh-expiration: 604800000
