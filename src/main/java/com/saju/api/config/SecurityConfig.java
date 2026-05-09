@@ -77,7 +77,11 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://localhost:7000"));
+        config.setAllowedOrigins(List.of(
+                "http://localhost:7000"
+                , "https://d1e2l8qv1z10s7.cloudfront.net"
+                , "https://d1n2lcd3oi7nqe.cloudfront.net"    // Vue
+        ));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);
