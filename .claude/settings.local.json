@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(xargs grep:*)",
+      "Bash(xargs ls:*)",
+      "Bash(find /c/developer/workspace/saju/api -name *.log -type f)"
+    ]
+  }
+}
